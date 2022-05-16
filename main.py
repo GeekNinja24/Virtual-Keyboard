@@ -15,7 +15,7 @@ keys = [["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"],
  
         #keys list stores the button of the keyboard
 
- #Empty string to store the words typed on the keyboard       
+        
 finalText = "" 
  
 
