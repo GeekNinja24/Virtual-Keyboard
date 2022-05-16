@@ -44,7 +44,7 @@ def drawAll(img, buttonList):
      out[mask] = cv2.addWeighted(img, alpha, imgNew, 1 - alpha, 0)[mask]
      return out
 
-#Defining size,text and position of the keyboard buttons
+#Defining size,text and position of the buttons
 class Button():
     def __init__(self, pos, text, size=[85,85]):
         self.pos = pos
