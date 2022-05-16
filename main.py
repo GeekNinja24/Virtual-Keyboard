@@ -3,17 +3,20 @@ from cvzone.HandTrackingModule import HandDetector
 from time import sleep
 import numpy as np
 import cvzone
+from pynput.keyboard import Controller, Key
 
 cap = cv2.VideoCapture(0)
 cap.set(3, 1280)
 cap.set(4, 720)
 
 detector = HandDetector(detectionCon=0.8)
-keys = [["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"],
+keys = [["1","2","3","4","5","6","7","8","9","0","<"],
+        ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P",],
         ["A", "S", "D", "F", "G", "H", "J", "K", "L", ";"],
-        ["Z", "X", "C", "V", "B", "N", "M", ",", ".", "/"]]
- 
-        
+        ["Z", "X", "C", "V", "B", "N", "M", ",", ".", "/"],
+        [" "]] 
+
+keyboard = Controller()      
 
         
 finalText = "" 
@@ -48,8 +51,12 @@ def drawAll(img, buttonList):
 class Button():
     def __init__(self, pos, text, size=[85,85]):
         self.pos = pos
-        self.size = size
         self.text = text
+        if text == ' ':            # if text is space
+            self.size = [584, 85]
+
+        else:                      # for other btns
+            self.size = size
 
 
 buttonList = []
@@ -70,20 +77,34 @@ while True:
 
             if x<lmList[8][0]<x+w and y<lmList[8][1]<y+h:
                 cv2.rectangle(img, button.pos, (x + w, y + h), (175, 0, 175), cv2.FILLED)
-                cv2.putText(img, button.text, (x + 20, y + 60), cv2.FONT_HERSHEY_PLAIN, 3, (255, 255, 255), 3)
+                cv2.putText(img, button.text, (x + 20, y + 100), cv2.FONT_HERSHEY_PLAIN, 3, (255, 255, 255), 3)
 
                 l,_,_ = detector.findDistance(8,12,img, draw=False)
                 #print(l)
+                a, _, _ = detector.findDistance(4, 16, img, draw=False)
+                # print(a)
+                if a < 17:
+                    keyboard.press(Key.backspace)
+                    sleep(0.15)
 
                 if l<40:
+                    if button.text == '<':
+                        keyboard.press(Key.backspace)
+                    else:
+                        keyboard.press(button.text)
+
+
                     cv2.rectangle(img, button.pos, (x + w, y + h), (0, 255, 0), cv2.FILLED)
                     cv2.putText(img, button.text, (x + 20, y + 60), cv2.FONT_HERSHEY_PLAIN, 3, (255, 255, 255), 3)
-                    finalText += button.text
-                    sleep(0.25)
+                    if button.text == "<":
+                        finalText = finalText[:-1]
+                    else:
+                        finalText += str(button.text)
+                    sleep(0.35)
 
-    cv2.rectangle(img, (50, 350), (700, 450), (175, 0, 175), cv2.FILLED)
-    cv2.putText(img, finalText, (60, 430),cv2.FONT_HERSHEY_PLAIN, 5, (255, 255, 255), 5)
+    cv2.rectangle(img, (15, 700), (1250, 550), (192,192,192), cv2.FILLED)
+    cv2.putText(img, finalText, (70, 610),cv2.FONT_HERSHEY_PLAIN, 5, (0,0,0), 5)
 
 
-    cv2.imshow("Image",img)
+    cv2.imshow("Virtual Keyboard",img)
     cv2.waitKey(1)
